@@ -1,0 +1,22 @@
+---
+title: "Data Mining Group Project"
+author: "Mengxin Tan - G38541671"
+date: "3/26/2020"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## I. Load the data
+```{r}
+library(readxl)
+url <- "https://archive.ics.uci.edu/ml/machine-learning-databases/00350/default%20of%20credit%20card%20clients.xls"
+destfile <- "default_of_clients.xls"
+curl::curl_download(url, destfile)
+df <- read_excel(destfile)
+names(df) <- df[1,]
+df <- df[-1,]
+```
+
