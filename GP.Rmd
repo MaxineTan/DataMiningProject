@@ -12,11 +12,11 @@ knitr::opts_chunk$set(echo = TRUE)
 ## I. Load the data
 ```{r}
 library(readxl)
-url <- "https://archive.ics.uci.edu/ml/machine-learning-databases/00350/default%20of%20credit%20card%20clients.xls"
+url<-"https://archive.ics.uci.edu/ml/machine-learning-databases/00350/default%20of%20credit%20card%20clients.xls"
 destfile <- "default_of_clients.xls"
 curl::curl_download(url, destfile)
 df <- read_excel(destfile)
 names(df) <- df[1,]
-df <- df[-1,]
+df<-df[-1,]
 ```
 
