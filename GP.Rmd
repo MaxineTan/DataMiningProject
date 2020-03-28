@@ -20,3 +20,22 @@ names(df) <- df[1,]
 df<-df[-1,]
 ```
 
+## II. Data Cleaning 
+#Clean the whole dataset including refill the null value, reclean the messy value
+```{r}
+df<-df[,-1] #not actually need the column ID
+summary(df)
+#notice that some of are character, we need to transform into numeric, some to factor
+# Converting columns to factors according to the data description
+# Converting columns to factors according to the data description 
+pay.cols.names=paste0("PAY_", c(0, 2:6))  # "PAY_0" "PAY_2" "PAY_3"...
+cols.to.factors=c("SEX", "EDUCATION", "MARRIAGE",pay.cols.names,"default payment next month")
+df[cols.to.factors]=lapply(df[cols.to.factors],factor)
+
+#converting columns to number
+bill.cols.names=paste0("BILL_AMT", c(1:6))
+payment.cols.names=paste0("PAY_AMT",c(1:6))
+col.to.num=c(bill.cols.names,payment.cols.names,"LIMIT_BAL")
+df[col.to.num]=lapply(df[col.to.num],as.numeric)
+
+```
