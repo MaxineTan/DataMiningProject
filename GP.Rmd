@@ -19,6 +19,10 @@ df <- read_excel(destfile)
 names(df) <- df[1,]
 df <- df[-1,]
 ```
+<<<<<<< HEAD
 
 ## II. Split the data into training and test set
 
+=======
+# hello, this is just a try from Jepson
+>>>>>>> e2a95dadd30ec08eef2d573e2421d2c14f8084d4
