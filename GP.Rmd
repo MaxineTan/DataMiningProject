@@ -20,10 +20,100 @@ names(df) <- df[1,]
 df <- df[-1,]
 ```
 
-## Feature Engineering and Variable Selection
+## II. Data Cleaning 
+
+## data processing
 ```{r}
-df$`default payment next month` <- as.numeric(df$`default payment next month`)
-corr_mx <- data.frame(cor(df$`default payment next month`, df[,-c(1,3,4,5,6,25)]))
+library(ggplot2)
+library(tidyr)
+library('dplyr') # data manipulati
+
+#if there are missing or anomalous data
+sum(is.na(df))  #zero missing value in the dataset
+
+#summary(df)
+
+#converting columns to number
+pay.cols.names=paste0("PAY_",c(0,2:6))
+bill.cols.names=paste0("BILL_AMT", c(1:6))
+payment.cols.names=paste0("PAY_AMT",c(1:6))
+col.to.num=c(bill.cols.names,payment.cols.names,pay.cols.names,"LIMIT_BAL","AGE")
+df[col.to.num]=lapply(df[col.to.num],as.numeric)
+
+
+# Categorical variables description and processing
+summary(df[,c('SEX','EDUCATION','MARRIAGE')])
+names(df)[names(df) == "default payment next month"] <-"DEF" #rename the column default
+```
+
+
+```{r}
+###########################
+#No missing data, but a few anomalous things:EDUCATION has category 5 and 6 that are unlabelled, moreover the category 0 is undocumented.
+#MARRIAGE has a label 0 that is undocumented
+#we decided to lable the MARRIAGE and EDUCATION category as 0 into others
+df$MARRIAGE[df$MARRIAGE==0]=3
+df$EDUCATION[df$EDUCATION==0]=4
+df$EDUCATION[df$EDUCATION==5]=4
+df$EDUCATION[df$EDUCATION==6]=4
+cols.to.factors=c("SEX", "EDUCATION", "MARRIAGE","DEF")
+
+df[cols.to.factors]=lapply(df[cols.to.factors],factor)
+```
+
+
+```{r}
+################################
+## Payment delay description
+#summary(df[pay.cols.names])
+#there is undocumented -2 and 0, we think it as the customers do not have any payment balance. We transfer the -2 into 0
+df$PAY_0[df$PAY_0==-2]=0 
+df$PAY_2[df$PAY_2==-2]=0 
+df$PAY_3[df$PAY_3==-2]=0 
+df$PAY_4[df$PAY_4==-2]=0 
+df$PAY_5[df$PAY_5==-2]=0 
+df$PAY_6[df$PAY_6==-2]=0 
+
+summary(df)
+```
+
+
+# Explore data
+```{r}
+bills = df[,c('BILL_AMT1','BILL_AMT2', 'BILL_AMT3', 'BILL_AMT4', 'BILL_AMT5', 'BILL_AMT6')]
+pay = df[,c('PAY_AMT1','PAY_AMT2', 'PAY_AMT3', 'PAY_AMT4', 'PAY_AMT5', 'PAY_AMT6')]
+late = df[,c('PAY_0','PAY_2', 'PAY_3', 'PAY_4', 'PAY_5', 'PAY_6')]
+
+ggplot(gather(bills), aes(value)) + geom_histogram(bins=100)+facet_wrap(~key,scales='free_x')
+ggplot(gather(pay), aes(value)) + geom_histogram(bins=100)+facet_wrap(~key,scales='free_x')
+
+hist(df$AGE)
+hist(df$LIMIT_BAL)
+#limit balance have a very large range, which can cause problems to some some models (for example in linear regression models
+
+
+```
+
+#further analysis, explore potential features
+```{r}
+#explore limit balance and default
+
+ggplot(df,aes(x="DEFAULT_NEXT_MONTH",y="PAY_AMT1"))+ geom_boxplot()+facet_wrap(~SEX)
+class(df$DEF)
+
+
+```
+
+# Feature Engineering and Variable Selection
+```{r}
+# calculate the correltion between vital variables with our dependent variable
+df$DEF <- as.numeric(df$DEF)
+df_num <- df[,-c(1, 3:6)]
+df_num
+#corr <- cor(as.matrix(df_num[,20]), as.matrix(df_num[,-20]))
+corr <- sapply(c(1:20), function(x)cor(df_num[,20], df_num[,x]))
+corr_mx <- data.frame(names(df_num), corr)
+corr_mx
 ```
 
 
